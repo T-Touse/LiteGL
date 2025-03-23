@@ -1,14 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
+
 <head>
-	<meta charset='utf-8'>
-	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-	<title>Page Title</title>
-	<meta name='viewport' content='width=device-width, initial-scale=1'>
-	<link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-	<script src='main.js'></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Test WebGL Renderer</title>
+	<style>
+		body {
+			margin: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			background: #222;
+		}
+
+		canvas {
+			border: 1px solid white;
+		}
+	</style>
 </head>
+
 <body>
-	
+	<canvas id="webglCanvas"></canvas>
+
+	<script type="module">
+		import { Renderer } from './Renderer.js';
+
+		const canvas = document.getElementById('webglCanvas');
+		canvas.width = 500;
+		canvas.height = 500;
+
+		const gl = canvas.getContext('webgl2');
+		if (!gl) {
+			console.error("Votre navigateur ne supporte pas WebGL2 !");
+		}
+
+		const renderer = new Renderer(gl);
+
+		// === SHADERS ===
+		const vertexShaderSource = `#version 300 es
+        layout(location = 0) in vec3 position;
+        void main() {
+            gl_Position = vec4(position, 1.0);
+        }`;
+
+		const fragmentShaderSource = `#version 300 es
+        precision highp float;
+        out vec4 FragColor;
+        void main() {
+            FragColor = vec4(0.0, 1.0, 0.0, 1.0); // Vert
+        }`;
+
+		const vertexShader = renderer.createVertexShader(vertexShaderSource);
+		const fragmentShader = renderer.createFragmentShader(fragmentShaderSource);
+		const shaderProgram = renderer.compileShaderProgram("basicShader", vertexShader, fragmentShader);
+		renderer.useShaderProgram(shaderProgram);
+
+		// === GÉOMÉTRIE ===
+		const vertices = [
+			0.0, 0.5, 0.0,  // Haut
+			-0.5, -0.5, 0.0,  // Bas gauche
+			0.5, -0.5, 0.0   // Bas droit
+		];
+		const geometry = renderer.createGeometry("triangle", vertices);
+
+		function render() {
+			gl.clearColor(0, 0, 0, 1);
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			renderer.draw(geometry);
+			requestAnimationFrame(render);
+		}
+
+		render();
+	</script>
 </body>
+
 </html>

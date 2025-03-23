@@ -1,5 +1,4 @@
-import { Matrix } from "./Matrix";
-import { Shader } from "./Shader";
+import { Matrix4 } from "./Matrix";
 
 export class Renderer {
 	#gl: WebGL2RenderingContext
@@ -115,34 +114,35 @@ export class Renderer {
 	}
 	// -- CAMERA --
 	
-	#tempMatrix = new Matrix();
-	#resultMatrix = new Matrix();
-	#modelviewMatrix = new Matrix();
-	#projectionMatrix = new Matrix();
+	#tempMatrix = new Matrix4();
+	#resultMatrix = new Matrix4();
+	#modelviewMatrix = new Matrix4();
+	#projectionMatrix = new Matrix4();
 	#matrixMode = "modelviewMatrix"
 	#multMatrix(m){
 		this.#tempMatrix = m
-		Matrix.multiply(this[this.#matrixMode], m, this.#resultMatrix)
+		const matrix = this.#matrixMode=="modelviewMatrix"?this.#modelviewMatrix:this.#projectionMatrix;
+		Matrix4.multiply(matrix, m, this.#resultMatrix)
 	}
 	translate(x, y, z){
-		this.#multMatrix(Matrix.translate(x, y, z));
+		this.#multMatrix(Matrix4.translate(x, y, z));
 	}
 	rotate(a, x, y, z){
-		this.#multMatrix(Matrix.rotate(a, x, y, z));
+		this.#multMatrix(Matrix4.rotate(a, x, y, z));
 	}
 	scale(x, y, z){
-		this.#multMatrix(Matrix.scale(x, y, z));
+		this.#multMatrix(Matrix4.scale(x, y, z));
 	}
 	lookAt(x, y, z){
-		this.#multMatrix(Matrix.translate(x, y, z));
+		this.#multMatrix(Matrix4.translate(x, y, z));
 	}
 	perspective(fov, aspect, near, far){
-		this.#multMatrix(Matrix.perspective(fov, aspect, near, far));
+		this.#multMatrix(Matrix4.perspective(fov, aspect, near, far));
 	}
 	frustum(l, r, b, t, n, f){
-		this.#multMatrix(Matrix.frustum(l, r, b, t, n, f));
+		this.#multMatrix(Matrix4.frustum(l, r, b, t, n, f));
 	}
 	ortho(l, r, b, t, n, f){
-		this.#multMatrix(Matrix.ortho(l, r, b, t, n, f));
+		this.#multMatrix(Matrix4.ortho(l, r, b, t, n, f));
 	}
 }

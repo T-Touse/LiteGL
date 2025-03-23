@@ -1,4 +1,4 @@
-export class Vector {
+export class Vector3 {
 	#x: number;
 	#y: number;
 	#z: number;
@@ -13,40 +13,40 @@ export class Vector {
 		this.#z = z || 0;
 	}
 
-	negative(): Vector {
-		return new Vector(-this.#x, -this.#y, -this.#z);
+	negative(): Vector3 {
+		return new Vector3(-this.#x, -this.#y, -this.#z);
 	}
 
-	add(v: number | Vector = 0): Vector {
-		if (v instanceof Vector) return new Vector(this.x + v.x, this.y + v.y, this.z + v.z);
-		else return new Vector(this.x + v, this.y + v, this.z + v);
+	add(v: number | Vector3 = 0): Vector3 {
+		if (v instanceof Vector3) return new Vector3(this.x + v.x, this.y + v.y, this.z + v.z);
+		else return new Vector3(this.x + v, this.y + v, this.z + v);
 	}
 
-	subtract(v: number | Vector = 0): Vector {
-		if (v instanceof Vector) return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
-		else return new Vector(this.x - v, this.y - v, this.z - v);
+	subtract(v: number | Vector3 = 0): Vector3 {
+		if (v instanceof Vector3) return new Vector3(this.x - v.x, this.y - v.y, this.z - v.z);
+		else return new Vector3(this.x - v, this.y - v, this.z - v);
 	}
 
-	multiply(v: number | Vector = 1): Vector {
-		if (v instanceof Vector) return new Vector(this.x * v.x, this.y * v.y, this.z * v.z);
-		else return new Vector(this.x * v, this.y * v, this.z * v);
+	multiply(v: number | Vector3 = 1): Vector3 {
+		if (v instanceof Vector3) return new Vector3(this.x * v.x, this.y * v.y, this.z * v.z);
+		else return new Vector3(this.x * v, this.y * v, this.z * v);
 	}
 
-	divide(v: number | Vector = 1): Vector {
-		if (v instanceof Vector) return new Vector(this.x / v.x, this.y / v.y, this.z / v.z);
-		else return new Vector(this.x / v, this.y / v, this.z / v);
+	divide(v: number | Vector3 = 1): Vector3 {
+		if (v instanceof Vector3) return new Vector3(this.x / v.x, this.y / v.y, this.z / v.z);
+		else return new Vector3(this.x / v, this.y / v, this.z / v);
 	}
 
-	equals(v: Vector): boolean {
+	equals(v: Vector3): boolean {
 		return this.x === v.x && this.y === v.y && this.z === v.z;
 	}
 
-	dot(v: Vector): number {
+	dot(v: Vector3): number {
 		return this.x * v.x + this.y * v.y + this.z * v.z;
 	}
 
-	cross(v: Vector): Vector {
-		return new Vector(
+	cross(v: Vector3): Vector3 {
+		return new Vector3(
 			this.y * v.z - this.z * v.y,
 			this.z * v.x - this.x * v.z,
 			this.x * v.y - this.y * v.x
@@ -57,7 +57,7 @@ export class Vector {
 		return Math.sqrt(this.dot(this));
 	}
 
-	unit(): Vector {
+	unit(): Vector3 {
 		const len = this.length();
 		return this.divide(len);
 	}
@@ -77,7 +77,7 @@ export class Vector {
 		};
 	}
 
-	angleTo(a: Vector): number {
+	angleTo(a: Vector3): number {
 		return Math.acos(this.dot(a) / (this.length() * a.length()));
 	}
 
@@ -85,39 +85,39 @@ export class Vector {
 		return [this.x, this.y, this.z].slice(0, n);
 	}
 
-	clone(): Vector {
-		return new Vector(this.x, this.y, this.z);
+	clone(): Vector3 {
+		return new Vector3(this.x, this.y, this.z);
 	}
 
-	static fromAngles(theta: number, phi: number): Vector {
-		return new Vector(Math.cos(theta) * Math.cos(phi), Math.sin(phi), Math.sin(theta) * Math.cos(phi));
+	static fromAngles(theta: number, phi: number): Vector3 {
+		return new Vector3(Math.cos(theta) * Math.cos(phi), Math.sin(phi), Math.sin(theta) * Math.cos(phi));
 	}
 
-	static randomDirection(): Vector {
-		return Vector.fromAngles(Math.random() * Math.PI * 2, Math.asin(Math.random() * 2 - 1));
+	static randomDirection(): Vector3 {
+		return Vector3.fromAngles(Math.random() * Math.PI * 2, Math.asin(Math.random() * 2 - 1));
 	}
 
-	static min(a: Vector, b: Vector): Vector {
-		return new Vector(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+	static min(a: Vector3, b: Vector3): Vector3 {
+		return new Vector3(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
 	}
 
-	static max(a: Vector, b: Vector): Vector {
-		return new Vector(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+	static max(a: Vector3, b: Vector3): Vector3 {
+		return new Vector3(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
 	}
 
-	static lerp(a: Vector, b: Vector, fraction: number): Vector {
+	static lerp(a: Vector3, b: Vector3, fraction: number): Vector3 {
 		return b.subtract(a).multiply(fraction).add(a);
 	}
 
-	static fromArray(a: number[]): Vector {
-		return new Vector(a[0], a[1], a[2]);
+	static fromArray(a: number[]): Vector3 {
+		return new Vector3(a[0], a[1], a[2]);
 	}
 
-	static fromObject(a: Vector | Record<string, number>): Vector {
-		return new Vector(a.x || 0, a.y || 0, a.z || 0);
+	static fromObject(a: Vector3 | Record<string, number>): Vector3 {
+		return new Vector3(a.x || 0, a.y || 0, a.z || 0);
 	}
 
-	static angleBetween(a: Vector, b: Vector): number {
+	static angleBetween(a: Vector3, b: Vector3): number {
 		return a.angleTo(b);
 	}
 }
