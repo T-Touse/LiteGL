@@ -42,6 +42,7 @@ export class Renderer {
 		const program = this.#gl.createProgram();
 		this.#gl.attachShader(program, vertexShader);
 		this.#gl.attachShader(program, fragmentShader);
+		this.#gl.linkProgram(program);
 		if (!this.#gl.getProgramParameter(program, this.#gl.LINK_STATUS)) {
 			throw new Error('Program link error: ' + this.#gl.getProgramInfoLog(program));
 		}
@@ -76,7 +77,7 @@ export class Renderer {
 	// -- MESH --
 	#createBuffer(type, data) {
 		const buffer = this.#gl.createBuffer();
-		this.#gl.bindBuffer(type, data);
+		this.#gl.bindBuffer(type, buffer);
 		this.#gl.bufferData(type, new Float32Array(data), this.#gl.STATIC_DRAW);
 		return buffer
 	}
