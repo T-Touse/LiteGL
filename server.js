@@ -1,8 +1,10 @@
+import index from "./example/index.html"
 const TS = Bun.Transpiler({loader: "ts"});
 
 const server = Bun.serve({
 	port: 3000, // Port du serveur
 	routes: {
+		"/*":index,
 		"/favicon.ico": new Response("404 Not Found", { status: 404 }),
 
 		"/src/*": async (req) => {

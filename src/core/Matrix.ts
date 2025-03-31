@@ -55,6 +55,9 @@ export class Matrix4 {
 			m[8] * vector.x + m[9] * vector.y + m[10] * vector.z
 		);
 	}
+	toArray(){
+		return Array.from(this.m)
+	}
 
 	static inverse(Matrix4, result?) {
 		result = result || new Matrix4();
