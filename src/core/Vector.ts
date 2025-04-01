@@ -6,6 +6,9 @@ export class Vector3 {
 	get x(): number { return this.#x; }
 	get y(): number { return this.#y; }
 	get z(): number { return this.#z; }
+	set x(value) { this.#x = value; }
+	set y(value) { this.#y = value; }
+	set z(value) { this.#z = value; }
 
 	constructor(x: number = 0, y: number = 0, z: number = 0) {
 		this.#x = x || 0;

@@ -58,7 +58,9 @@ export class Matrix4 {
 	toArray(){
 		return Array.from(this.m)
 	}
-
+	get M(){
+		return this.m
+	}
 	static inverse(Matrix4, result?) {
 		result = result || new Matrix4();
 		const m = Matrix4.m;
@@ -131,7 +133,7 @@ export class Matrix4 {
 		return result;
 	};
 
-	static identity(result?) {
+	static identity(result?:Matrix4):Matrix4 {
 		result = result || new Matrix4();
 		var m = result.m;
 		m[0] = m[5] = m[10] = m[15] = 1;
@@ -199,7 +201,7 @@ export class Matrix4 {
 		return result;
 	};
 
-	static scale(x, y, z, result?) {
+	static scale(x, y, z, result?:Matrix4):Matrix4 {
 		result = result || new Matrix4();
 		var m = result.m;
 
@@ -225,7 +227,7 @@ export class Matrix4 {
 
 		return result;
 	};
-	static translate(x, y, z, result?) {
+	static translate(x, y, z, result?:Matrix4):Matrix4 {
 		result = result || new Matrix4();
 		var m = result.m;
 
@@ -252,7 +254,7 @@ export class Matrix4 {
 		return result;
 	};
 
-	static rotate(a, x, y, z, result?) {
+	static rotate(a, x, y, z, result?:Matrix4):Matrix4 {
 		if (!a || (!x && !y && !z)) {
 			return Matrix4.identity(result);
 		}

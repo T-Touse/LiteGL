@@ -16,6 +16,10 @@ interface Geometry{
 
 }
 
+interface Camera{
+	projectionMatrix:Matrix4;
+	viewMatrix: Matrix4;
+}
 
 export class Renderer {
 	#gl: WebGL2RenderingContext
@@ -83,7 +87,7 @@ export class Renderer {
 	setUniform(name, value) {
 		if(!this.#program) throw `useShaderProgram` 
 		let location = this.#program.uniformLocations.get(name) || this.#gl.getUniformLocation(this.#program.program, name);
-		if (!location) return;
+		if (!location) throw new Error("location is null for "+name);
 		this.#program.uniformLocations.set(name, location);
 		if(value instanceof Vector3)value = value.toArray()
 		if(value instanceof Matrix4)value = value.toArray()
@@ -144,6 +148,7 @@ export class Renderer {
 	draw(geometry:string) {
 		const _geometry:Geometry|undefined = this.#geometries.get(geometry);
 		if (!_geometry) throw new Error("Draw access error: geometry is not defined, use createGeometry(name,vertices,indices,?allowRenaming)")
+		this.setAttribute("position", _geometry.vertices, 3);
 		if (!_geometry.vao){
 			const vao = this.#gl.createVertexArray();
 			this.#gl.bindVertexArray(vao);
@@ -154,9 +159,7 @@ export class Renderer {
 			_geometry.vao = vao
 		}else{
 			this.#gl.bindVertexArray(_geometry.vao);
-		}
-
-
+		}	
 		if (_geometry.indices) {
 			this.#gl.bindBuffer(this.#gl.ELEMENT_ARRAY_BUFFER, _geometry.indices);
 			this.#gl.drawElements(this.#gl.TRIANGLES, _geometry.count, this.#gl.UNSIGNED_SHORT, 0);
@@ -164,21 +167,25 @@ export class Renderer {
 			this.#gl.drawArrays(this.#gl.TRIANGLES, 0, _geometry.count);
 		}
 
+		const err = this.#gl.getError();
+		if (err !== this.#gl.NO_ERROR) {
+			console.error("WebGL Error:", err);
+		}	
 	}
 	clear(mask){
 		if(!mask)
 			mask = 16640//this.#gl.COLOR_BUFFER_BIT|this.#gl.DEPTH_BUFFER_BIT
 		this.#gl.clear(mask)
 	}
-	#camera
-	setCamera(projectionMatrix,modelViewMatrix){
-		this.#camera = {projectionMatrix,modelViewMatrix}
+	#camera:Camera|null = null
+	setCamera(projectionMatrix:Matrix4,viewMatrix:Matrix4){
+		this.#camera = {projectionMatrix,viewMatrix}
 	}
 	#applyCamera(){
 		if(this.#camera){
-			const {projectionMatrix,modelViewMatrix} = this.#camera
-			this.setUniform("GL_PROJECTION",projectionMatrix)
-			this.setUniform("GL_MODELVIEW",modelViewMatrix)
+			const {projectionMatrix,viewMatrix} = this.#camera
+			this.setUniform("projectionMatrix",projectionMatrix)
+			this.setUniform("modelViewMatrix",viewMatrix)
 		}
 	}
 	protected deleteShader(shaderName:string){

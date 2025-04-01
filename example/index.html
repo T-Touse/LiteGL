@@ -26,22 +26,30 @@
 
 	<script type="module">
 		import { Renderer } from '../src/core/renderer.ts';
-// 🎨 Code GLSL des shaders
-const VERTEX_SHADER_SOURCE = `
-    attribute vec3 a_position;
-    void main() {
-        gl_Position = vec4(a_position, 1.0);
-    }
+		import { Camera } from '../src/core/camera.ts';
+
+		// 🎨 Code GLSL des shaders
+		const VERTEX_SHADER_SOURCE = `#version 300 es
+
+in vec3 position;
+
+uniform mat4 projectionMatrix;
+uniform mat4 modelViewMatrix;
+
+void main() {
+    gl_Position = modelViewMatrix*vec4(position, 1.0);
+}
 `;
 
-const FRAGMENT_SHADER_SOURCE = `
-    precision mediump float;
-    void main() {
-        gl_FragColor = vec4(1.0, 0.5, 0.2, 1.0); // Orange
-    }
-`;
+        const FRAGMENT_SHADER_SOURCE = `#version 300 es
+        precision highp float;
+        out vec4 FragColor;
+        void main() {
+            FragColor = vec4(0.0, 1.0, 0.0, 1.0); // Vert
+        }`;
+
 		function main() {
-			// 📌 Récupère le canvas et initialise WebGL2
+			// 📌 Récupérer le canvas et initialiser WebGL2
 			const canvas = document.getElementById("canvas");
 			canvas.width = 500;
 			canvas.height = 500;
@@ -52,37 +60,46 @@ const FRAGMENT_SHADER_SOURCE = `
 				return;
 			}
 
-			// 📌 Initialise le moteur de rendu
+			// 📌 Initialiser le moteur de rendu
 			const renderer = new Renderer(gl);
 
-			// 📌 Compile les shaders
+			// 📌 Compiler les shaders
 			const vertexShader = renderer.createVertexShader(VERTEX_SHADER_SOURCE);
 			const fragmentShader = renderer.createFragmentShader(FRAGMENT_SHADER_SOURCE);
 			const program = renderer.compileShaderProgram("testProgram", vertexShader, fragmentShader);
 
-			// 📌 Crée un triangle
+			// 📌 Créer un triangle
 			const triangle = renderer.createGeometry("triangle", [
 				0.0, 0.5, 0.0,  // Sommet haut
 				-0.5, -0.5, 0.0,  // Bas gauche
 				0.5, -0.5, 0.0   // Bas droit
-			]);
+			], null);
 
-			// 📌 Affichage
+			// 📌 Affichage du triangle
+			console.log("✅ Géométrie créée :", triangle);
+			const camera = new Camera()
+			camera.move(0,0,10)
+			console.log(camera.viewMatrix,camera.projectionMatrix)
+
+			//renderer.setCamera(camera.projectionMatrix,camera.viewMatrix);
+
 			function render() {
 				gl.clearColor(0, 0, 0, 1);
 				gl.clear(gl.COLOR_BUFFER_BIT);
 
 				renderer.useShaderProgram(program);
-				renderer.setAttribute("a_position", triangle.vertices, 3);
-				renderer.draw(triangle);
+				//renderer.setUniform("projectionMatrix", camera.projectionMatrix);
+				renderer.setUniform("modelViewMatrix", camera.viewMatrix);
 
-				requestAnimationFrame(render);
+				renderer.draw(triangle);
+				requestAnimationFrame(render)
 			}
 
 			render(); // 🚀 Lance l'affichage
 		}
 
 		main();
+
 	</script>
 </body>
 
